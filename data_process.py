@@ -1,6 +1,10 @@
 import csv
 import json
 import datetime
+from sqlalchemy import create_engine, Column, Integer, String, Enum
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
 
 class JSONDateTimeEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -44,5 +48,32 @@ with open('data/nobel_winners.json') as f:
     nobel_winners = json.load(f)
 
 
+# create the databse engine:
+engine = create_engine('sqlite:///data/nobel_winners.db', echo=True)
+
+Base =  declarative_base()
+
+class Winner(Base):
+    __tablename__= 'winners'
+    id = Column(Integer, primary_key=True)
+    category = Column(String)
+    name = Column(String)
+    nationality = Column(String)
+    year = Column(Integer)
+    gender = Column(Enum('male', 'female'))
+    def __repr__(self):
+        return "<Winner(name='%s', category='%s', year='%s')>"% (self.name, self.category, self.year)
+
+Base.metadata.create_all(engine)
+
+#create the session:
+
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# winner_rows = [Winner(**w) for w in nobel_winners]
+# session.add_all(winner_rows)
+# 
 
 
+session.query(Winner).get(3)
