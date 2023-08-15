@@ -73,7 +73,11 @@ session = Session()
 
 # winner_rows = [Winner(**w) for w in nobel_winners]
 # session.add_all(winner_rows)
-# 
+
+session.commit()
 
 
-session.query(Winner).get(3)
+
+# session.query(Winner).get(3)
+# res = session.query(Winner).order_by('year')
+# list(res)
